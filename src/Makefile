@@ -257,6 +257,7 @@ ifeq ($(BUILD_WITH_SYSTEMD),yes)
 endif
 
 ifeq ($(SOFTMEM),softmem)
+	FINAL_CFLAGS+= -DUSE_SOFTMEM
 	FINAL_LIBS+= ../../linux-soft-memory/libsoftmem.a
 endif
 

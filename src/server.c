@@ -38,6 +38,10 @@
 #include "functions.h"
 #include "syscheck.h"
 
+#ifdef USE_SOFTMEM
+#include "softmem.h"
+#endif
+
 #include <time.h>
 #include <signal.h>
 #include <sys/wait.h>
