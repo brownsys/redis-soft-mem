@@ -74,6 +74,11 @@ ifneq (,$(findstring armv,$(uname_M)))
 endif
 endif
 
+# Soft memory support
+ifeq ($(USE_SOFTMEM),yes)
+	SOFTMEM=softmem
+endif
+
 # Backwards compatibility for selecting an allocator
 ifeq ($(USE_TCMALLOC),yes)
 	MALLOC=tcmalloc
@@ -249,6 +254,10 @@ endif
 ifeq ($(BUILD_WITH_SYSTEMD),yes)
 	FINAL_LIBS+=$(LIBSYSTEMD_LIBS)
 	FINAL_CFLAGS+= -DHAVE_LIBSYSTEMD
+endif
+
+ifeq ($(SOFTMEM),softmem)
+	FINAL_LIBS+= ../../linux-soft-memory/libsoftmem.a
 endif
 
 ifeq ($(MALLOC),tcmalloc)
