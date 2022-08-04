@@ -6824,6 +6824,10 @@ int main(int argc, char **argv) {
     tzset(); /* Populates 'timezone' global. */
     zmalloc_set_oom_handler(redisOutOfMemoryHandler);
 
+#ifdef USE_SOFTMEM
+    init_alloc();
+#endif
+
     /* To achieve entropy, in case of containers, their time() and getpid() can
      * be the same. But value of tv_usec is fast enough to make the difference */
     gettimeofday(&tv,NULL);
