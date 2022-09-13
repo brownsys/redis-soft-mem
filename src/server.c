@@ -39,7 +39,7 @@
 #include "syscheck.h"
 
 #ifdef USE_SOFTMEM
-#include "u-lib.hh"
+#include "memory_allocator.h"
 #endif
 
 #include <time.h>

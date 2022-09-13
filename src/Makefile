@@ -259,7 +259,7 @@ endif
 ifeq ($(SOFTMEM),softmem)
 	FINAL_CFLAGS+= -DUSE_SOFTMEM
 	FINAL_CFLAGS+= -I../../linux-soft-memory
-	FINAL_LIBS+= ../../linux-soft-memory/libsoftmem.a
+	FINAL_LIBS+= ../../linux-soft-memory/bazel-bin/libmemory_allocator.a
 endif
 
 ifeq ($(MALLOC),tcmalloc)
