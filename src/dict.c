@@ -338,6 +338,7 @@ dictEntry *dictAddRaw(dict *d, void *key, dictEntry **existing)
      * more frequently. */
     htidx = dictIsRehashing(d) ? 1 : 0;
     size_t metasize = dictMetadataSize(d);
+    // TODO(malte): consider using soft memory here!
     entry = zmalloc(sizeof(*entry) + metasize);
     if (metasize > 0) {
         memset(dictMetadata(entry), 0, metasize);

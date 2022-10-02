@@ -76,6 +76,7 @@ typedef struct dictType {
 #define DICTHT_SIZE(exp) ((exp) == -1 ? 0 : (unsigned long)1<<(exp))
 #define DICTHT_SIZE_MASK(exp) ((exp) == -1 ? 0 : (DICTHT_SIZE(exp))-1)
 
+// TODO(malte): this, and dictEntry, should be part of a soft DS for us.
 struct dict {
     dictType *type;
 
