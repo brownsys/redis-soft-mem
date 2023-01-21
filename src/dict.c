@@ -47,6 +47,10 @@
 #include "zmalloc.h"
 #include "redisassert.h"
 
+#ifdef USE_SOFTMEM
+#include "memory_allocator.h"
+#endif
+
 /* Using dictEnableResize() / dictDisableResize() we make possible to
  * enable/disable resizing of the hash table as needed. This is very important
  * for Redis, as we use copy-on-write and don't want to move too much memory
@@ -338,8 +342,11 @@ dictEntry *dictAddRaw(dict *d, void *key, dictEntry **existing)
      * more frequently. */
     htidx = dictIsRehashing(d) ? 1 : 0;
     size_t metasize = dictMetadataSize(d);
-    // TODO(malte): consider using soft memory here!
+#ifdef USE_SOFTMEM
+    entry = soft_malloc(sizeof(*entry) + metasize);
+#else
     entry = zmalloc(sizeof(*entry) + metasize);
+#endif
     if (metasize > 0) {
         memset(dictMetadata(entry), 0, metasize);
     }
@@ -469,7 +476,11 @@ void dictFreeUnlinkedEntry(dict *d, dictEntry *he) {
     if (he == NULL) return;
     dictFreeKey(d, he);
     dictFreeVal(d, he);
+#ifdef USE_SOFTMEM
+    soft_free(he);
+#else
     zfree(he);
+#endif
 }
 
 /* Destroy an entire dictionary */
@@ -487,7 +498,11 @@ int _dictClear(dict *d, int htidx, void(callback)(dict*)) {
             nextHe = he->next;
             dictFreeKey(d, he);
             dictFreeVal(d, he);
+#ifdef USE_SOFTMEM
+            soft_free(he);
+#else
             zfree(he);
+#endif
             d->ht_used[htidx]--;
             he = nextHe;
         }
