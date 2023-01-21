@@ -6825,7 +6825,7 @@ int main(int argc, char **argv) {
     zmalloc_set_oom_handler(redisOutOfMemoryHandler);
 
 #ifdef USE_SOFTMEM
-    init_alloc();
+    init_alloc(NULL);
 #endif
 
     /* To achieve entropy, in case of containers, their time() and getpid() can
