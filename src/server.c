@@ -6825,6 +6825,7 @@ int main(int argc, char **argv) {
     zmalloc_set_oom_handler(redisOutOfMemoryHandler);
 
 #ifdef USE_SOFTMEM
+    set_mem_consumption_out("/tmp/redis-tests/redis_memory_consumption_out.txt");
     init_alloc(NULL);
 #endif
 
