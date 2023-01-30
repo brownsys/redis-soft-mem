@@ -6771,6 +6771,8 @@ redisTestProc *getTestProcByName(const char *name) {
 }
 #endif
 
+void callback(void* ptr) {return;}
+
 int main(int argc, char **argv) {
     struct timeval tv;
     int j;
@@ -6826,7 +6828,7 @@ int main(int argc, char **argv) {
 
 #ifdef USE_SOFTMEM
     set_mem_consumption_out("/tmp/redis-tests/redis_memory_consumption_out.txt");
-    init_alloc(NULL);
+    init_alloc(callback);
 #endif
 
     /* To achieve entropy, in case of containers, their time() and getpid() can
