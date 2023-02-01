@@ -6771,7 +6771,15 @@ redisTestProc *getTestProcByName(const char *name) {
 }
 #endif
 
-void callback(void* ptr) {return;}
+void callback(void* ptr) {
+    dictEntry* de = (dictEntry*) ptr;
+    void* key = de->key;
+    dict* d = de->d;
+    printf("Performing callback on dict entry with key %s.\n", (char*)key);
+    if (dictDelete(d, key) != DICT_OK) {
+    	fprintf(stderr, "Failed to delete dict entry for key %s.\n", (char*)key);
+    }
+}
 
 int main(int argc, char **argv) {
     struct timeval tv;

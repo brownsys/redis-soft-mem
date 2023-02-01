@@ -344,6 +344,7 @@ dictEntry *dictAddRaw(dict *d, void *key, dictEntry **existing)
     size_t metasize = dictMetadataSize(d);
 #ifdef USE_SOFTMEM
     entry = soft_malloc(sizeof(*entry) + metasize);
+    entry->d = d;
 #else
     entry = zmalloc(sizeof(*entry) + metasize);
 #endif
@@ -355,6 +356,7 @@ dictEntry *dictAddRaw(dict *d, void *key, dictEntry **existing)
     d->ht_used[htidx]++;
 
     /* Set the hash entry fields. */
+    //printf("[dictAddRaw] key: %s.\n", (char*)key);
     dictSetKey(d, entry, key);
     return entry;
 }
@@ -477,7 +479,9 @@ void dictFreeUnlinkedEntry(dict *d, dictEntry *he) {
     dictFreeKey(d, he);
     dictFreeVal(d, he);
 #ifdef USE_SOFTMEM
-    soft_free(he);
+    // this is invoked during callback, so the corresponding soft memory
+    // will be freed by the underlying Soft LL shortly afterward
+    // soft_free(he);
 #else
     zfree(he);
 #endif

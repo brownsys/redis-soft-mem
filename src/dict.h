@@ -44,8 +44,11 @@
 #define DICT_OK 0
 #define DICT_ERR 1
 
+typedef struct dict dict;
+
 typedef struct dictEntry {
     void *key;
+    dict *d;
     union {
         void *val;
         uint64_t u64;
@@ -57,8 +60,6 @@ typedef struct dictEntry {
                                  * pointer-aligned address) of size as returned
                                  * by dictType's dictEntryMetadataBytes(). */
 } dictEntry;
-
-typedef struct dict dict;
 
 typedef struct dictType {
     uint64_t (*hashFunction)(const void *key);
