@@ -90,6 +90,14 @@ typedef long long ustime_t; /* microsecond time type. */
 #include "endianconv.h"
 #include "crc64.h"
 
+
+// ------- BEGIN SOFT MEM ------- //
+ 
+void callback(void* ptr);
+
+// ------- END SOFT MEM ------- //
+
+
 /* min/max */
 #undef min
 #undef max

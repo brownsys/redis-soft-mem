@@ -6834,9 +6834,19 @@ int main(int argc, char **argv) {
     tzset(); /* Populates 'timezone' global. */
     zmalloc_set_oom_handler(redisOutOfMemoryHandler);
 
+    // FOR SOFT MEM
+    // create a pipe for communicating callback requests to main loop
+    int p[2];
+    if (pipe(p) < 0) {
+    	return NULL;
+    }
+    // put pipes into nonblocking mode
+    if (fcntl(p[0], F_SETFL, O_NONBLOCK) < 0 || fcntl(p[1], F_SETFL, O_NONBLOCK)) {
+    	return NULL;
+    }
 #ifdef USE_SOFTMEM
     set_mem_consumption_out("/tmp/redis-tests/redis_memory_consumption_out.txt");
-    init_alloc(callback);
+    init_alloc(callback, p[1]);
 #endif
 
     /* To achieve entropy, in case of containers, their time() and getpid() can
@@ -7083,7 +7093,7 @@ int main(int argc, char **argv) {
     redisSetCpuAffinity(server.server_cpulist);
     setOOMScoreAdj(-1);
 
-    aeMain(server.el);
+    aeMain(server.el, p[0]);
     aeDeleteEventLoop(server.el);
     return 0;
 }
