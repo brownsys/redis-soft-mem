@@ -355,18 +355,18 @@ static int processTimeEvents(aeEventLoop *eventLoop) {
  * if flags has AE_CALL_BEFORE_SLEEP set, the beforesleep callback is called.
  *
  * The function returns the number of events processed. */
-int aeProcessEvents(int fd, aeEventLoop *eventLoop, int flags)
+int aeProcessEvents(void** shared, aeEventLoop *eventLoop, int flags)
 {
-    // TODO: check for callback request:
-    // nonblocking read on a pipe that queues callback requests
-    // which take the form of a pointer that the callback should
-    // be invoked on
-    char buf[8];
+    /*char buf[8];
     int n = read(fd, buf, 8);
     if (n != -1 && n != 0) {
         printf("GOT CALLBACK REQUEST\n");
-	return NULL;
     	callback((void*)buf);
+    }*/
+    if (*shared != NULL) {
+    	printf("GOT CALLBACK REQUEST\n");
+	callback(*shared);
+	*shared = NULL;
     }
 
     int processed = 0, numevents;
@@ -503,10 +503,10 @@ int aeWait(int fd, int mask, long long milliseconds) {
     }
 }
 
-void aeMain(aeEventLoop *eventLoop, int fd) {
+void aeMain(aeEventLoop *eventLoop, void** shared) {
     eventLoop->stop = 0;
     while (!eventLoop->stop) {
-        aeProcessEvents(fd, eventLoop, AE_ALL_EVENTS|
+        aeProcessEvents(shared, eventLoop, AE_ALL_EVENTS|
                                    AE_CALL_BEFORE_SLEEP|
                                    AE_CALL_AFTER_SLEEP);
     }

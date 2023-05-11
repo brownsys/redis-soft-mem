@@ -123,9 +123,9 @@ long long aeCreateTimeEvent(aeEventLoop *eventLoop, long long milliseconds,
         aeTimeProc *proc, void *clientData,
         aeEventFinalizerProc *finalizerProc);
 int aeDeleteTimeEvent(aeEventLoop *eventLoop, long long id);
-int aeProcessEvents(int fd, aeEventLoop *eventLoop, int flags);
+int aeProcessEvents(void** shared, aeEventLoop *eventLoop, int flags);
 int aeWait(int fd, int mask, long long milliseconds);
-void aeMain(aeEventLoop *eventLoop, int fd);
+void aeMain(aeEventLoop *eventLoop, void** shared);
 char *aeGetApiName(void);
 void aeSetBeforeSleepProc(aeEventLoop *eventLoop, aeBeforeSleepProc *beforesleep);
 void aeSetAfterSleepProc(aeEventLoop *eventLoop, aeBeforeSleepProc *aftersleep);
