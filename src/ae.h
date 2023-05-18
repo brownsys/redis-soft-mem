@@ -34,6 +34,7 @@
 #define __AE_H__
 
 #include "monotonic.h"
+#include <stdbool.h>
 
 #define AE_OK 0
 #define AE_ERR -1
@@ -59,6 +60,12 @@
 
 /* Macros */
 #define AE_NOTUSED(V) ((void) V)
+
+typedef struct redis_shared_list
+{
+    void* data;
+    struct redis_shared_list* next;
+} redis_shared_list_t;
 
 struct aeEventLoop;
 
@@ -123,9 +130,9 @@ long long aeCreateTimeEvent(aeEventLoop *eventLoop, long long milliseconds,
         aeTimeProc *proc, void *clientData,
         aeEventFinalizerProc *finalizerProc);
 int aeDeleteTimeEvent(aeEventLoop *eventLoop, long long id);
-int aeProcessEvents(void** shared, aeEventLoop *eventLoop, int flags);
+int aeProcessEvents(bool* shared_bool, void** shared_list, aeEventLoop *eventLoop, int flags);
 int aeWait(int fd, int mask, long long milliseconds);
-void aeMain(aeEventLoop *eventLoop, void** shared);
+void aeMain(aeEventLoop *eventLoop, bool* shared_bool, void** shared_list);
 char *aeGetApiName(void);
 void aeSetBeforeSleepProc(aeEventLoop *eventLoop, aeBeforeSleepProc *beforesleep);
 void aeSetAfterSleepProc(aeEventLoop *eventLoop, aeBeforeSleepProc *aftersleep);

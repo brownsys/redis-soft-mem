@@ -6836,17 +6836,15 @@ int main(int argc, char **argv) {
 
     // FOR SOFT MEM
     // create a shared memory location for communicating callback requests to main loop
-    void* shared = NULL;
-    /*if (pipe(p) < 0) {
-    	return NULL;
-    }
-    // put pipes into nonblocking mode
-    if (fcntl(p[0], F_SETFL, O_NONBLOCK) < 0 || fcntl(p[1], F_SETFL, O_NONBLOCK)) {
-    	return NULL;
-    }*/
+    bool shared_bool = false;
+    shared_list_t* shared_list = (shared_list_t*) zmalloc(sizeof(shared_list_t));
+    shared_list->data = NULL;
+    shared_list->next = NULL;
+
 #ifdef USE_SOFTMEM
     set_mem_consumption_out("/tmp/redis-tests/redis_memory_consumption_out.txt");
-    init_alloc(callback, &shared);
+    size_t PAGESIZE = 1UL << 12;
+    init_alloc(callback, 24*PAGESIZE, &shared_bool, (void*)shared_list);
 #endif
 
     /* To achieve entropy, in case of containers, their time() and getpid() can
@@ -7093,7 +7091,7 @@ int main(int argc, char **argv) {
     redisSetCpuAffinity(server.server_cpulist);
     setOOMScoreAdj(-1);
 
-    aeMain(server.el, &shared);
+    aeMain(server.el, &shared_bool, (void*)shared_list);
     aeDeleteEventLoop(server.el);
     return 0;
 }

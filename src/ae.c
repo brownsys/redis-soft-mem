@@ -355,18 +355,21 @@ static int processTimeEvents(aeEventLoop *eventLoop) {
  * if flags has AE_CALL_BEFORE_SLEEP set, the beforesleep callback is called.
  *
  * The function returns the number of events processed. */
-int aeProcessEvents(void** shared, aeEventLoop *eventLoop, int flags)
+int aeProcessEvents(bool* shared_bool, void** shared_list_, aeEventLoop *eventLoop, int flags)
 {
-    /*char buf[8];
-    int n = read(fd, buf, 8);
-    if (n != -1 && n != 0) {
-        printf("GOT CALLBACK REQUEST\n");
-    	callback((void*)buf);
-    }*/
-    if (*shared != NULL) {
+    redis_shared_list_t* shared_list = (redis_shared_list_t*) shared_list_;
+    // process a batch of callback requests whenever the flag is flipped.
+    // reset the shared state after processing the callbacks
+    if (*shared_bool != false) {
     	printf("GOT CALLBACK REQUEST\n");
-	callback(*shared);
-	*shared = NULL;
+	redis_shared_list_t* tmp = shared_list;
+	while (tmp != NULL) {
+	    callback(tmp->data);
+	    tmp = tmp->next;
+	}
+	*shared_bool = false;
+	shared_list->data = NULL;
+	shared_list->next = NULL;
     }
 
     int processed = 0, numevents;
@@ -503,10 +506,10 @@ int aeWait(int fd, int mask, long long milliseconds) {
     }
 }
 
-void aeMain(aeEventLoop *eventLoop, void** shared) {
+void aeMain(aeEventLoop *eventLoop, bool* shared_bool, void** shared_list) {
     eventLoop->stop = 0;
     while (!eventLoop->stop) {
-        aeProcessEvents(shared, eventLoop, AE_ALL_EVENTS|
+        aeProcessEvents(shared_bool, shared_list, eventLoop, AE_ALL_EVENTS|
                                    AE_CALL_BEFORE_SLEEP|
                                    AE_CALL_AFTER_SLEEP);
     }
